@@ -78,18 +78,36 @@ namespace ClienteDotNet.Controllers
         // GET: Notes/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            HttpResponseMessage response = client.GetAsync($"/notas/api/notes/{id}").Result;
+            Note note = response.Content.ReadAsAsync<Note>().Result;
+            if (note != null)
+            {
+                return View(note);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // POST: Notes/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(int id, Note note)
         {
             try
             {
                 // TODO: Add update logic here
-
-                return RedirectToAction("Index");
+                HttpResponseMessage response = client.PutAsJsonAsync<Note>($"/notas/api/notes/{id}", note).Result;
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error white editing note."; ;
+                    return View();
+                }
+                
             }
             catch
             {
