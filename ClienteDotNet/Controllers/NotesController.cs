@@ -21,7 +21,7 @@ namespace ClienteDotNet.Controllers
         // GET: Notes
         public ActionResult Index()
         {
-             List<Note> notes = new List<Note>();
+            List<Note> notes = new List<Note>();
             HttpResponseMessage response = client.GetAsync("/notas/api/notes").Result;
             if (response.IsSuccessStatusCode)
             {
@@ -33,7 +33,16 @@ namespace ClienteDotNet.Controllers
         // GET: Notes/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            HttpResponseMessage response = client.GetAsync($"/notas/api/notes/{id}").Result;
+            Note note = response.Content.ReadAsAsync<Note>().Result;
+            if (note != null)
+            {
+                return View(note);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // GET: Notes/Create
