@@ -53,13 +53,21 @@ namespace ClienteDotNet.Controllers
 
         // POST: Notes/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(Note note)
         {
             try
             {
                 // TODO: Add insert logic here
-
-                return RedirectToAction("Index");
+                HttpResponseMessage response = client.PostAsJsonAsync<Note>("/notas/api/notes", note).Result;
+                if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error white creating note.";
+                    return View();
+                }    
             }
             catch
             {
