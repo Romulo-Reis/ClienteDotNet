@@ -118,7 +118,16 @@ namespace ClienteDotNet.Controllers
         // GET: Notes/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            HttpResponseMessage response = client.GetAsync($"/notas/api/notes/{id}").Result;
+            Note note = response.Content.ReadAsAsync<Note>().Result;
+            if (note != null)
+            {
+                return View(note);
+            }
+            else
+            {
+                return HttpNotFound();
+            }
         }
 
         // POST: Notes/Delete/5
@@ -128,8 +137,17 @@ namespace ClienteDotNet.Controllers
             try
             {
                 // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
+                HttpResponseMessage response = client.DeleteAsync($"/notas/api/notes/{id}").Result;
+                if(response.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    ViewBag.Error = "Error white deleting note.";
+                    return View();
+                }
+                
             }
             catch
             {
